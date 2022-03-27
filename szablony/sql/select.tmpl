@@ -1,0 +1,22 @@
+SELECT *
+FROM {{- tabela }}
+
+{{ if warunki }}
+	WHERE {{ each warunki, warunek, indeks }}
+		{{ if indeks > 0}} AND {{ end }}
+		{{- warunek.nazwa }} = ?
+	{{ end }}
+{{ end }}
+
+{{ if sortuj }}
+	ORDER BY {{ each sortuj, kolumna, indeks }}
+		{{ if indeks > 0}} , {{ end }}
+		{{- kolumna.nazwa }} {{- kolumna.kierunek }}
+	{{ end }}
+{{ end }}
+
+{{ if okno }}
+	LIMIT ?, ?
+{{ end }}
+
+;
