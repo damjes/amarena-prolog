@@ -100,3 +100,14 @@ szukaj(Tabela, Opcje, Slownik) :-
 	daj_szablon(select, SlownikOpcji, Szablon),
 	odbc_execute(Szablon, WartosciParametrow, Wiersz),
 	zrob_slownik(Tabela, Wiersz, Slownik).
+
+wyciagnij_dane(Nazwa-WartoscTyp, SlownikKolumny, Wartosc) :-
+	kolumna_typ(WartoscTyp, SlownikWartosci), % dla X-Y zwraca nazwa: X, typ: Y
+	SlownikKolumny = _{nazwa: Nazwa, typ: SlownikWartosci.typ},
+	Wartosc = SlownikWartosci.nazwa.
+
+utworz(Slownik) :-
+	dict_pairs(Slownik, Tabela, Pary),
+	maplist(wyciagnij_dane, Pary, Kolumny, Wartosci),
+	daj_szablon(insert, _{tabela: Tabela, kolumny: Kolumny}, Szablon),
+	odbc_execute(Szablon, Wartosci, _).
