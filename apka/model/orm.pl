@@ -15,21 +15,9 @@
 %tymczasowo
 :- odbc_connect(amarena, db, [alias(db), user(root)]).
 
-
-szukaj(Tabela, Opcje, Slownik) :-
-	podziel_opcje(Tabela, Opcje, SlownikOpcji, WartosciParametrow),
-	daj_szablon(select, SlownikOpcji, Szablon),
-	odbc_execute(Szablon, WartosciParametrow, Wiersz),
-	zrob_slownik(Tabela, Wiersz, Slownik).
-
-podziel_opcje(Tabela, Opcje, SlownikOpcji, Parametry) :-
-	dziel_parametry(Opcje, Kolumny, Wartosci, Sortuj, Okno),
-	stan_okna(Okno, StanOkna),
-	append(Wartosci, Okno, Parametry),
-	SlownikOpcji  = orm{tabela: Tabela}
-		.dodaj_niepuste(warunki: Kolumny)
-		.dodaj_niepuste(sortuj: Sortuj)
-		.dodaj_niepuste(okno: StanOkna).
+kolumna_typ(X, kolumna{nazwa: X, typ: default}) :-
+	X \= _-_.
+kolumna_typ(X-Y, kolumna{nazwa: X, typ: Y}).
 
 dziel_parametry([], [], [], [], []).
 dziel_parametry([Kolumna=Wartosc | Opcje],
@@ -58,15 +46,32 @@ dziel_parametry([okno(Pomin, Ile) | Opcje],
 		[Pomin, Ile]) :-
 	dziel_parametry(Opcje, Kolumny, Wartosci, Sortuj, []).
 
-kolumna_typ(X, kolumna{nazwa: X, typ: default}) :-
-	X \= _-_.
-kolumna_typ(X-Y, kolumna{nazwa: X, typ: Y}).
+stan_okna([_, _], okno).
+stan_okna([], []).
 
 dodaj_niepuste(_:[], Dict, Dict).
 dodaj_niepuste(A:B, Dict, Dict.put(A, B)) :- B \= [].
 
-stan_okna([_, _], okno).
-stan_okna([], []).
+podziel_opcje(Tabela, Opcje, SlownikOpcji, Parametry) :-
+	dziel_parametry(Opcje, Kolumny, Wartosci, Sortuj, Okno),
+	stan_okna(Okno, StanOkna),
+	append(Wartosci, Okno, Parametry),
+	SlownikOpcji  = orm{tabela: Tabela}
+.dodaj_niepuste(warunki: Kolumny)
+.dodaj_niepuste(sortuj: Sortuj)
+.dodaj_niepuste(okno: StanOkna).
+
+dopisz_okno(okno, [integer, integer]).
+dopisz_okno([], []).
+
+ustal_typ(Kolumna, Kolumna.get(typ, default)).
+
+przygotuj_parametry(select, SlownikOpcji, ParametryZOknem) :-
+	maplist(get_dict(typ), SlownikOpcji.get(warunki, []), Parametry),
+	append(Parametry, ParametryOkna, ParametryZOknem),
+	dopisz_okno(SlownikOpcji.get(okno, []), ParametryOkna).
+przygotuj_parametry(insert, SlownikOpcji, Parametry) :-
+	maplist(ustal_typ, SlownikOpcji.get(kolumny, []), Parametry).
 
 daj_szablon(Nazwa, SlownikOpcji, Szablon) :-
 	szablon_orma(Nazwa, SlownikOpcji, Szablon), !.
@@ -83,21 +88,15 @@ daj_szablon(Nazwa, SlownikOpcji, Szablon) :-
 	odbc_prepare(db, Zapytanie, Parametry, Szablon, [source(true)]),
 	assert(szablon_orma(Nazwa, SlownikOpcji, Szablon)).
 
-przygotuj_parametry(select, SlownikOpcji, ParametryZOknem) :-
-	maplist(get_dict(typ), SlownikOpcji.get(warunki, []), Parametry),
-	append(Parametry, ParametryOkna, ParametryZOknem),
-	dopisz_okno(SlownikOpcji.get(okno, []), ParametryOkna).
-przygotuj_parametry(insert, SlownikOpcji, Parametry) :-
-	maplist(ustal_typ, SlownikOpcji.get(kolumny, []), Parametry).
-
-ustal_typ(Kolumna, Kolumna.get(typ, default)).
-
-dopisz_okno(okno, [integer, integer]).
-dopisz_okno([], []).
+przeksztalc_wynik(column(_Tabela, Kolumna, Wartosc), Kolumna-Wartosc).
 
 zrob_slownik(Tabela, Wiersz, Slownik) :-
 	Wiersz =.. [_ | Kolumny],
 	maplist(przeksztalc_wynik, Kolumny, Pary),
 	dict_pairs(Slownik, Tabela, Pary).
 
-przeksztalc_wynik(column(_Tabela, Kolumna, Wartosc), Kolumna-Wartosc).
+szukaj(Tabela, Opcje, Slownik) :-
+	podziel_opcje(Tabela, Opcje, SlownikOpcji, WartosciParametrow),
+	daj_szablon(select, SlownikOpcji, Szablon),
+	odbc_execute(Szablon, WartosciParametrow, Wiersz),
+	zrob_slownik(Tabela, Wiersz, Slownik).
