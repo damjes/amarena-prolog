@@ -1,0 +1,12 @@
+INSERT INTO {{- tabela }}
+
+( {{ each kolumny, kolumna, indeks }}
+	{{ if indeks > 0}}, {{ end }}
+	{{- kolumna.nazwa }}
+{{ end }} )
+
+VALUES ( {{ each kolumny, kolumna, indeks }}
+	{{ if indeks > 0}}, {{ end }}
+	?
+{{ end }} )
+;

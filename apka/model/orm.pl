@@ -77,11 +77,20 @@ daj_szablon(Nazwa, SlownikOpcji, Szablon) :-
 			extension(tmpl),
 			strip(true),
 			undefined(false)]))),
+	% writeln('DEBUG: pokaż zapytanie:'),
+	% writeln(Zapytanie),
+	przygotuj_parametry(Nazwa, SlownikOpcji, Parametry),
+	odbc_prepare(db, Zapytanie, Parametry, Szablon, [source(true)]),
+	assert(szablon_orma(Nazwa, SlownikOpcji, Szablon)).
+
+przygotuj_parametry(select, SlownikOpcji, ParametryZOknem) :-
 	maplist(get_dict(typ), SlownikOpcji.get(warunki, []), Parametry),
 	append(Parametry, ParametryOkna, ParametryZOknem),
-	dopisz_okno(SlownikOpcji.get(okno, []), ParametryOkna),
-	odbc_prepare(db, Zapytanie, ParametryZOknem, Szablon, [source(true)]),
-	assert(szablon_orma(Nazwa, SlownikOpcji, Szablon)).
+	dopisz_okno(SlownikOpcji.get(okno, []), ParametryOkna).
+przygotuj_parametry(insert, SlownikOpcji, Parametry) :-
+	maplist(ustal_typ, SlownikOpcji.get(kolumny, []), Parametry).
+
+ustal_typ(Kolumna, Kolumna.get(typ, default)).
 
 dopisz_okno(okno, [integer, integer]).
 dopisz_okno([], []).
