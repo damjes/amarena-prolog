@@ -7,7 +7,7 @@ SET {{ each kolumny, kolumna, indeks }}
 
 {{ if warunki }}
 	WHERE {{ each warunki, kolumna, indeks }}
-		{{ if indeks > 0}}, {{ end }}
+		{{ if indeks > 0}} AND {{ end }}
 		{{- kolumna.nazwa }} = ?
 	{{ end }}
 {{ end }}
