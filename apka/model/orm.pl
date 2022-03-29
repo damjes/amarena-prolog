@@ -1,10 +1,8 @@
-%:- module(orm, [
-	%szukaj/3,
-	%utworz/0,
-	%aktualizuj/0,
-	%usun/0,
-	%usun_wiele/0
-	%]).
+:- module(orm, [
+	orm_szukaj/3,
+	orm_utworz/1,
+	orm_aktualizuj/2,
+	orm_usun/1]).
 
 :- use_module(library(st/st_render)).
 :- use_module(library(odbc)).
@@ -12,8 +10,8 @@
 :- dynamic szablon_orma/3.
 :- volatile szablon_orma/3.
 
-%tymczasowo
-:- odbc_connect(amarena, db, [alias(db), user(root)]).
+% TODO: wywalić i zrobić porządną konfigurację
+% :- odbc_connect(amarena, db, [alias(db), user(root)]).
 
 kolumna_typ(X, kolumna{nazwa: X, typ: default}) :-
 	X \= _-_.
@@ -79,10 +77,6 @@ przygotuj_parametry(update, SlownikOpcji, Parametry) :-
 przygotuj_parametry(delete, SlownikOpcji, Parametry) :-
 	maplist(ustal_typ, SlownikOpcji.get(warunki, []), Parametry).
 
-daj_szablon(_, SlownikOpcji, _) :-
-	writeln('DEBUG: słownik opcji:'),
-	writeln(SlownikOpcji),
-	fail.
 daj_szablon(Nazwa, SlownikOpcji, Szablon) :-
 	szablon_orma(Nazwa, SlownikOpcji, Szablon), !.
 daj_szablon(Nazwa, SlownikOpcji, Szablon) :-
@@ -92,13 +86,7 @@ daj_szablon(Nazwa, SlownikOpcji, Szablon) :-
 			extension(tmpl),
 			strip(true),
 			undefined(false)]))),
-	writeln('DEBUG: pokaż zapytanie:'),
-	writeln(Zapytanie),
-	writeln('DEBUG: pokaż słownik opcji:'),
-	writeln(SlownikOpcji),
 	przygotuj_parametry(Nazwa, SlownikOpcji, Parametry),
-	writeln('DEBUG: pokaż parametry:'),
-	writeln(Parametry),
 	odbc_prepare(db, Zapytanie, Parametry, Szablon, [source(true)]),
 	assert(szablon_orma(Nazwa, SlownikOpcji, Szablon)).
 
@@ -109,7 +97,7 @@ zrob_slownik(Tabela, Wiersz, Slownik) :-
 	maplist(przeksztalc_wynik, Kolumny, Pary),
 	dict_pairs(Slownik, Tabela, Pary).
 
-szukaj(Tabela, Opcje, Slownik) :-
+orm_szukaj(Tabela, Opcje, Slownik) :-
 	podziel_opcje(Tabela, Opcje, SlownikOpcji, WartosciParametrow),
 	daj_szablon(select, SlownikOpcji, Szablon),
 	odbc_execute(Szablon, WartosciParametrow, Wiersz),
@@ -124,12 +112,12 @@ obrob_kolumny(Slownik, Tabela, Kolumny, Wartosci) :-
 	dict_pairs(Slownik, Tabela, Pary),
 	maplist(wyciagnij_dane, Pary, Kolumny, Wartosci).
 
-utworz(Slownik) :-
+orm_utworz(Slownik) :-
 	obrob_kolumny(Slownik, Tabela, Kolumny, Wartosci),
 	daj_szablon(insert, _{tabela: Tabela, kolumny: Kolumny}, Szablon),
 	odbc_execute(Szablon, Wartosci, _).
 
-aktualizuj(NoweDane, Warunek) :-
+orm_aktualizuj(NoweDane, Warunek) :-
 	obrob_kolumny(NoweDane, Tabela, Kolumny, NoweWartosci),
 	obrob_kolumny(Warunek, _, KolumnyWarunek, WartosciWarunek),
 	append(NoweWartosci, WartosciWarunek, Wartosci),
@@ -140,7 +128,7 @@ aktualizuj(NoweDane, Warunek) :-
 		Szablon),
 	odbc_execute(Szablon, Wartosci, _).
 
-usun(Slownik) :-
+orm_usun(Slownik) :-
 	obrob_kolumny(Slownik, Tabela, Kolumny, Wartosci),
 	daj_szablon(delete, _{tabela: Tabela, warunki: Kolumny}, Szablon),
 	odbc_execute(Szablon, Wartosci, _).
