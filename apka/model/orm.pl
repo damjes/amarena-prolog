@@ -57,9 +57,9 @@ podziel_opcje(Tabela, Opcje, SlownikOpcji, Parametry) :-
 	stan_okna(Okno, StanOkna),
 	append(Wartosci, Okno, Parametry),
 	SlownikOpcji  = orm{tabela: Tabela}
-.dodaj_niepuste(warunki: Kolumny)
-.dodaj_niepuste(sortuj: Sortuj)
-.dodaj_niepuste(okno: StanOkna).
+		.dodaj_niepuste(warunki: Kolumny)
+		.dodaj_niepuste(sortuj: Sortuj)
+		.dodaj_niepuste(okno: StanOkna).
 
 dopisz_okno(okno, [integer, integer]).
 dopisz_okno([], []).
@@ -72,7 +72,15 @@ przygotuj_parametry(select, SlownikOpcji, ParametryZOknem) :-
 	dopisz_okno(SlownikOpcji.get(okno, []), ParametryOkna).
 przygotuj_parametry(insert, SlownikOpcji, Parametry) :-
 	maplist(ustal_typ, SlownikOpcji.get(kolumny, []), Parametry).
+przygotuj_parametry(update, SlownikOpcji, Parametry) :-
+	maplist(ustal_typ, SlownikOpcji.get(kolumny, []), ParametryKolumn),
+	maplist(ustal_typ, SlownikOpcji.get(warunki, []), ParametryWarunkow),
+	append(ParametryKolumn, ParametryWarunkow, Parametry).
 
+% daj_szablon(Nazwa, SlownikOpcji, Szablon) :-
+% 	writeln('DEBUG: słownik opcji:'),
+% 	writeln(SlownikOpcji),
+% 	fail.
 daj_szablon(Nazwa, SlownikOpcji, Szablon) :-
 	szablon_orma(Nazwa, SlownikOpcji, Szablon), !.
 daj_szablon(Nazwa, SlownikOpcji, Szablon) :-
@@ -113,4 +121,15 @@ obrob_kolumny(Slownik, Tabela, Kolumny, Wartosci) :-
 utworz(Slownik) :-
 	obrob_kolumny(Slownik, Tabela, Kolumny, Wartosci),
 	daj_szablon(insert, _{tabela: Tabela, kolumny: Kolumny}, Szablon),
+	odbc_execute(Szablon, Wartosci, _).
+
+aktualizuj(NoweDane, Warunek) :-
+	obrob_kolumny(NoweDane, Tabela, Kolumny, NoweWartosci),
+	obrob_kolumny(Warunek, _, KolumnyWarunek, WartosciWarunek),
+	append(NoweWartosci, WartosciWarunek, Wartosci),
+	daj_szablon(
+		update,
+		orm{tabela: Tabela, kolumny: Kolumny}
+			.dodaj_niepuste(warunki: KolumnyWarunek),
+		Szablon),
 	odbc_execute(Szablon, Wartosci, _).

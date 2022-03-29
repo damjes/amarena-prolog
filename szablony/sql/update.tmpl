@@ -1,0 +1,15 @@
+UPDATE {{- tabela }}
+
+SET {{ each kolumny, kolumna, indeks }}
+	{{ if indeks > 0}}, {{ end }}
+	{{- kolumna.nazwa }} = ?
+{{ end }}
+
+{{ if warunki }}
+	WHERE {{ each warunki, kolumna, indeks }}
+		{{ if indeks > 0}}, {{ end }}
+		{{- kolumna.nazwa }} = ?
+	{{ end }}
+{{ end }}
+
+;
