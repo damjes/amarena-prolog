@@ -1,0 +1,10 @@
+DELETE FROM {{- tabela }}
+
+{{ if warunki }}
+	WHERE {{ each warunki, kolumna, indeks }}
+		{{ if indeks > 0}} AND {{ end }}
+		{{- kolumna.nazwa }} = ?
+	{{ end }}
+{{ end }}
+
+;

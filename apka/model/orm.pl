@@ -76,11 +76,13 @@ przygotuj_parametry(update, SlownikOpcji, Parametry) :-
 	maplist(ustal_typ, SlownikOpcji.get(kolumny, []), ParametryKolumn),
 	maplist(ustal_typ, SlownikOpcji.get(warunki, []), ParametryWarunkow),
 	append(ParametryKolumn, ParametryWarunkow, Parametry).
+przygotuj_parametry(delete, SlownikOpcji, Parametry) :-
+	maplist(ustal_typ, SlownikOpcji.get(warunki, []), Parametry).
 
-% daj_szablon(Nazwa, SlownikOpcji, Szablon) :-
-% 	writeln('DEBUG: słownik opcji:'),
-% 	writeln(SlownikOpcji),
-% 	fail.
+daj_szablon(_, SlownikOpcji, _) :-
+	writeln('DEBUG: słownik opcji:'),
+	writeln(SlownikOpcji),
+	fail.
 daj_szablon(Nazwa, SlownikOpcji, Szablon) :-
 	szablon_orma(Nazwa, SlownikOpcji, Szablon), !.
 daj_szablon(Nazwa, SlownikOpcji, Szablon) :-
@@ -90,9 +92,13 @@ daj_szablon(Nazwa, SlownikOpcji, Szablon) :-
 			extension(tmpl),
 			strip(true),
 			undefined(false)]))),
-	% writeln('DEBUG: pokaż zapytanie:'),
-	% writeln(Zapytanie),
+	writeln('DEBUG: pokaż zapytanie:'),
+	writeln(Zapytanie),
+	writeln('DEBUG: pokaż słownik opcji:'),
+	writeln(SlownikOpcji),
 	przygotuj_parametry(Nazwa, SlownikOpcji, Parametry),
+	writeln('DEBUG: pokaż parametry:'),
+	writeln(Parametry),
 	odbc_prepare(db, Zapytanie, Parametry, Szablon, [source(true)]),
 	assert(szablon_orma(Nazwa, SlownikOpcji, Szablon)).
 
@@ -132,4 +138,9 @@ aktualizuj(NoweDane, Warunek) :-
 		orm{tabela: Tabela, kolumny: Kolumny}
 			.dodaj_niepuste(warunki: KolumnyWarunek),
 		Szablon),
+	odbc_execute(Szablon, Wartosci, _).
+
+usun(Slownik) :-
+	obrob_kolumny(Slownik, Tabela, Kolumny, Wartosci),
+	daj_szablon(delete, _{tabela: Tabela, warunki: Kolumny}, Szablon),
 	odbc_execute(Szablon, Wartosci, _).
