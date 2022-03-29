@@ -106,8 +106,11 @@ wyciagnij_dane(Nazwa-WartoscTyp, SlownikKolumny, Wartosc) :-
 	SlownikKolumny = _{nazwa: Nazwa, typ: SlownikWartosci.typ},
 	Wartosc = SlownikWartosci.nazwa.
 
-utworz(Slownik) :-
+obrob_kolumny(Slownik, Tabela, Kolumny, Wartosci) :-
 	dict_pairs(Slownik, Tabela, Pary),
-	maplist(wyciagnij_dane, Pary, Kolumny, Wartosci),
+	maplist(wyciagnij_dane, Pary, Kolumny, Wartosci).
+
+utworz(Slownik) :-
+	obrob_kolumny(Slownik, Tabela, Kolumny, Wartosci),
 	daj_szablon(insert, _{tabela: Tabela, kolumny: Kolumny}, Szablon),
 	odbc_execute(Szablon, Wartosci, _).
