@@ -15,7 +15,6 @@
 
 start_bazy :-
 	sekcja_konfiga(dsn, Konfig),
-	writeln(Konfig),
 	odbc_connect(amarena, db, [alias(db) | Konfig]).
 
 kolumna_typ(X, kolumna{nazwa: X, typ: default}) :-

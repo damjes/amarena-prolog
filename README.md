@@ -23,7 +23,5 @@ Uruchomienie
    ```
 4. Wystartować serwer:
    ```bash
-   $ swipl -s apka/serwer/serwer -g start_serwera
+   $ swipl -s amarena.pl
    ```
-
-Na ten moment działa również moduł ORMa w `apka/model/orm.pl`.
