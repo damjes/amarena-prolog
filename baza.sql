@@ -32,11 +32,11 @@ INSERT INTO `liczby` (`liczba`, `nazwa`) VALUES
 
 CREATE TABLE `odpowiedz` (
   `id_pytania` int(11) NOT NULL,
-  `data_odpowiedzi` timestamp NOT NULL DEFAULT current_timestamp(),
+  `timestamp_odpowiedzi` timestamp NOT NULL DEFAULT current_timestamp(),
   `odpowiedz` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-INSERT INTO `odpowiedz` (`id_pytania`, `data_odpowiedzi`, `odpowiedz`) VALUES
+INSERT INTO `odpowiedz` (`id_pytania`, `timestamp_odpowiedzi`, `odpowiedz`) VALUES
 (1, '2022-03-16 13:36:04', 'Jeszcze jak!');
 
 CREATE TABLE `pytanie` (
