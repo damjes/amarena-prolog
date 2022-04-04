@@ -18,4 +18,4 @@ zadanie_http(Zadanie) :-
 zadanie_http(_) :-
 	fail. % TODO: dorobić stronę błędu 500
 
-:- http_handler('/statyczne/', http_reply_file(statyczne, []), [prefix]).
+:- http_handler('/statyczne/', http_reply_from_files(statyczne, []), [prefix]).
