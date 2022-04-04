@@ -6,6 +6,7 @@
 :- use_module(library(http/http_files)).
 
 :- use_module(apka/inne/czytanie_konfiga).
+:- use_module(apka/kontroler/odczyt).
 
 start_serwera :-
 	sekcja_konfiga(http, ListaKonfig),
@@ -17,5 +18,7 @@ zadanie_http(Zadanie) :-
 	http_dispatch(Zadanie), !.
 zadanie_http(_) :-
 	fail. % TODO: dorobić stronę błędu 500
+
+:- route_get('/', pokaz_profil).
 
 :- http_handler('/statyczne/', http_reply_from_files(statyczne, []), [prefix]).
