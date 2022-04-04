@@ -18,9 +18,6 @@ start_bazy :-
 	writeln(Konfig),
 	odbc_connect(amarena, db, [alias(db) | Konfig]).
 
-% TODO: wywalić i zrobić porządną konfigurację
-% :- odbc_connect(amarena, db, [alias(db), user(root)]).
-
 kolumna_typ(X, kolumna{nazwa: X, typ: default}) :-
 	X \= _-_.
 kolumna_typ(X-Y, kolumna{nazwa: X, typ: Y}).
