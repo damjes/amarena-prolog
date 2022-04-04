@@ -10,6 +10,7 @@ SET time_zone = "+00:00";
 CREATE DATABASE IF NOT EXISTS `amarena` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 USE `amarena`;
 
+DROP TABLE IF EXISTS `liczby`;
 CREATE TABLE `liczby` (
   `liczba` int(11) NOT NULL,
   `nazwa` tinytext CHARACTER SET utf8 COLLATE utf8_polish_ci NOT NULL
@@ -30,6 +31,7 @@ INSERT INTO `liczby` (`liczba`, `nazwa`) VALUES
 (12, 'dwanaście'),
 (13, 'trzynaście');
 
+DROP TABLE IF EXISTS `odpowiedz`;
 CREATE TABLE `odpowiedz` (
   `id_pytania` int(11) NOT NULL,
   `timestamp_odpowiedzi` timestamp NOT NULL DEFAULT current_timestamp(),
@@ -39,6 +41,7 @@ CREATE TABLE `odpowiedz` (
 INSERT INTO `odpowiedz` (`id_pytania`, `timestamp_odpowiedzi`, `odpowiedz`) VALUES
 (1, '2022-03-16 13:36:04', 'Jeszcze jak!');
 
+DROP TABLE IF EXISTS `pytanie`;
 CREATE TABLE `pytanie` (
   `id_pytania` int(11) NOT NULL,
   `kto` int(11) NOT NULL,
@@ -50,12 +53,24 @@ CREATE TABLE `pytanie` (
 INSERT INTO `pytanie` (`id_pytania`, `kto`, `komu`, `pytanie`, `timestamp_pytania`) VALUES
 (1, 3, 1, 'Co?', '2022-03-16 13:35:03'),
 (2, 2, 1, 'Jak skutecznie jabłko?', '2022-03-16 13:35:31');
+DROP VIEW IF EXISTS `pytanie_odpowiedz`;
+CREATE TABLE `pytanie_odpowiedz` (
+`id_pytania` int(11)
+,`kto` int(11)
+,`komu` int(11)
+,`pytanie` text
+,`timestamp_pytania` timestamp
+,`timestamp_odpowiedzi` timestamp
+,`odpowiedz` text
+);
 
+DROP TABLE IF EXISTS `smietnik`;
 CREATE TABLE `smietnik` (
   `liczba` int(11) NOT NULL,
   `tekst` tinytext NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+DROP TABLE IF EXISTS `uzyszkodnik`;
 CREATE TABLE `uzyszkodnik` (
   `id_uzyszkodnika` int(11) NOT NULL,
   `login` varchar(64) NOT NULL,
@@ -69,6 +84,7 @@ INSERT INTO `uzyszkodnik` (`id_uzyszkodnika`, `login`, `hasz`, `mail`, `widoczno
 (2, 'ziomek', 'ccc', 'zio@m.ek', 'zalogowany'),
 (3, 'skryta', 'bbb', 'skryta@dev.null', 'prywatny');
 
+DROP TABLE IF EXISTS `wisienka`;
 CREATE TABLE `wisienka` (
   `kto` int(11) NOT NULL,
   `komu` int(11) NOT NULL
@@ -79,6 +95,10 @@ INSERT INTO `wisienka` (`kto`, `komu`) VALUES
 (1, 3),
 (2, 3),
 (3, 1);
+DROP TABLE IF EXISTS `pytanie_odpowiedz`;
+
+DROP VIEW IF EXISTS `pytanie_odpowiedz`;
+CREATE OR REPLACE VIEW `pytanie_odpowiedz`  AS SELECT `pytanie`.`id_pytania` AS `id_pytania`, `pytanie`.`kto` AS `kto`, `pytanie`.`komu` AS `komu`, `pytanie`.`pytanie` AS `pytanie`, `pytanie`.`timestamp_pytania` AS `timestamp_pytania`, `odpowiedz`.`timestamp_odpowiedzi` AS `timestamp_odpowiedzi`, `odpowiedz`.`odpowiedz` AS `odpowiedz` FROM (`pytanie` join `odpowiedz` on(`pytanie`.`id_pytania` = `odpowiedz`.`id_pytania`)) ;
 
 
 ALTER TABLE `liczby`
