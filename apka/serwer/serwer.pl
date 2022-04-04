@@ -10,7 +10,6 @@
 start_serwera :-
 	findall([Nazwa, Wartosc], konfig(http, Nazwa, Wartosc), ListaListKonfig),
 	maplist('=..', ListaKonfig, ListaListKonfig),
-	writeln(ListaKonfig),
 	http_server(zadanie_http, ListaKonfig).
 
 zadanie_http(Zadanie) :-
