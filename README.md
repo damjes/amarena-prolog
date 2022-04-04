@@ -19,8 +19,11 @@ Uruchomienie
 2. Skonfigurować źródło ODBC DSN o nazwie `amarena`.
 3. Zainstalować brakujące dodatki do Prologa:
    ```bash
-   $ swipl -s amarena.pl -t instaluj
+   $ swipl -s narzedzia/paczki.pl -t instaluj
    ```
-4. TODO
+4. Wystartować serwer:
+   ```bash
+   $ swipl -s apka/serwer/serwer -g start_serwera
+   ```
 
-Na ten moment działa moduł ORMa w `apka/model/orm.pl`.
+Na ten moment działa również moduł ORMa w `apka/model/orm.pl`.
