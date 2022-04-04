@@ -12,7 +12,7 @@
 
 pokaz_profil :-
 	http_current_request(Zadanie),
-	assert(dane_pwp(test, aaa)),
+	assert(dane_pwp(tytul, "Profil użytkownika")),
 	reply_pwp_page('szablony/pwp/profil_uz.xml', [mime_type('text/xml')], Zadanie),
 	retractall(dane_pwp(_, _)).
 

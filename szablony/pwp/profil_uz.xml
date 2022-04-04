@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--<?xml-stylesheet type="text/xsl" href="/statyczne/arkusz.xsl"?>-->
+<?xml-stylesheet type="text/xsl" href="/statyczne/arkusz.xsl"?>
 
-<profil_uzytkownika xmlns:pwp="http://www.cs.otago.ac.nz/staffpriv/ok/pwp.pl">
+<strona xmlns:pwp="http://www.cs.otago.ac.nz/staffpriv/ok/pwp.pl">
 	<dane_pwp>
-		<dana pwp:ask="dane_pwp(Nazwa, Wartosc)">
-			<nazwa pwp:use="Nazwa" />
-			<wartosc pwp:use="Wartosc" />
-		</dana>
+		<tytul pwp:ask="dane_pwp(tytul, Wartosc)" pwp:use="Wartosc" />
 	</dane_pwp>
-	<pytania>
-		<pytanie pwp:ask="orm_szukaj(pytanie_odpowiedz, [], Pytanie)">
-			<kto pwp:ask="get_dict(kto, Pytanie, Kto)" pwp:use="Kto" />
-		</pytanie>
-	</pytania>
-</profil_uzytkownika>
+	<profil_uzytkownika>
+		<pytania>
+			<pytanie pwp:ask="orm_szukaj(pytanie_odpowiedz, [], Pytanie)">
+				<kto pwp:ask="get_dict(kto, Pytanie, Kto)" pwp:use="Kto" />
+			</pytanie>
+		</pytania>
+	</profil_uzytkownika>
+</strona>
