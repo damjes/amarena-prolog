@@ -5,11 +5,10 @@
 :- use_module(library(http/http_dispatch)).
 :- use_module(library(http/http_files)).
 
-:- [konfig/konfig].
+:- use_module(apka/inne/czytanie_konfiga).
 
 start_serwera :-
-	findall([Nazwa, Wartosc], konfig(http, Nazwa, Wartosc), ListaListKonfig),
-	maplist('=..', ListaKonfig, ListaListKonfig),
+	sekcja_konfiga(http, ListaKonfig),
 	http_server(zadanie_http, ListaKonfig).
 
 zadanie_http(Zadanie) :-
