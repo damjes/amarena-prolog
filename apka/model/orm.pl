@@ -1,4 +1,5 @@
 :- module(orm, [
+	start_bazy/0,
 	orm_szukaj/3,
 	orm_utworz/1,
 	orm_aktualizuj/2,
@@ -7,8 +8,15 @@
 :- use_module(library(st/st_render)).
 :- use_module(library(odbc)).
 
+:- use_module(apka/inne/czytanie_konfiga).
+
 :- dynamic szablon_orma/3.
 :- volatile szablon_orma/3.
+
+start_bazy :-
+	sekcja_konfiga(dsn, Konfig),
+	writeln(Konfig),
+	odbc_connect(amarena, db, [alias(db) | Konfig]).
 
 % TODO: wywalić i zrobić porządną konfigurację
 % :- odbc_connect(amarena, db, [alias(db), user(root)]).
