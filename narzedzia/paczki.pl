@@ -1,3 +1,4 @@
+paczka(arouter).
 paczka(simple_template).
 
 instaluj(Opcje) :-
