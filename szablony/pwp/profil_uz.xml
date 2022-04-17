@@ -8,7 +8,14 @@
 	<profil_uzytkownika>
 		<pytania>
 			<pytanie pwp:ask="orm_szukaj(pytanie_odpowiedz, [], Pytanie)">
-				<kto pwp:ask="get_dict(kto, Pytanie, Kto)" pwp:use="Kto" />
+				<kto pwp:ask="get_dict(kto, Pytanie, Kto),
+					orm_szukaj(uzyszkodnik, [id_uzyszkodnika-integer=Kto], Uzyszkodnik),
+					get_dict(login, Uzyszkodnik, Login)" pwp:use="Login" />
+				<komu pwp:ask="get_dict(komu, Pytanie, Komu),
+					orm_szukaj(uzyszkodnik, [id_uzyszkodnika-integer=Komu], Uzyszkodnik),
+					get_dict(login, Uzyszkodnik, Login)" pwp:use="Login" />
+				<pytanie pwp:ask="get_dict(pytanie, Pytanie, Tresc)" pwp:use="Tresc" />
+				<odpowiedz pwp:ask="get_dict(odpowiedz, Pytanie, Odpowiedz)" pwp:use="Odpowiedz" />
 			</pytanie>
 		</pytania>
 	</profil_uzytkownika>
