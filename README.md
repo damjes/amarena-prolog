@@ -17,11 +17,12 @@ Uruchomienie
 1. Zainstalować [SWI-Prolog](http://www.swi-prolog.org/). Wsparcie Prologa
    dla ODBC jest wymagane.
 2. Skonfigurować źródło ODBC DSN o nazwie `amarena`.
-3. Zainstalować brakujące dodatki do Prologa:
+3. Przygotować plik konfiguracyjny `konfig/konfig.pl` na podstawie `konfig/konfig-szablon.pl`.
+4. Zainstalować brakujące dodatki do Prologa:
    ```bash
    $ swipl -s narzedzia/paczki.pl -t instaluj
    ```
-4. Wystartować serwer:
+5. Wystartować serwer:
    ```bash
    $ swipl -s amarena.pl
    ```
